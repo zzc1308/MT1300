@@ -28,9 +28,9 @@ on:
 #    types: started
 
 env:
-  REPO_OP: https://github.com/openwrt/openwrt.git
+  REPO_OP: https://github.com/gl-inet/openwrt.git
   REPO_LEDE: https://github.com/coolsnowwolf/lede
-  REPO_BRANCH: v18.06.8
+  REPO_BRANCH: openwrt-19.07.4
   FEEDS_CONF: feeds.conf.default
   PATCH_PATH: patch
   CONFIG_FILE: .config
@@ -71,22 +71,64 @@ jobs:
         git clone $REPO_LEDE -b master lede
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         ln -sf /workdir/lede $GITHUB_WORKSPACE/lede
-        cd /workdir/openwrt/package
-        git clone https://github.com/fw876/helloworld helloworld
-        git clone https://github.com/V2RaySSR/openwrt-packages kenzo
-        git clone https://github.com/V2RaySSR/small small
-
+        
+    - name: Update and install LEDE feeds
+      run: cd /workdir/lede && ./scripts/feeds update -a && ./scripts/feeds install -a
+        
+    - name: Update and install OpenWrt feeds
+      run: cd /workdir/openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
+  
     - name: Load custom feeds
       run: |
         cd /workdir
-        sed -i '/src-git luci /d' openwrt/feeds.conf.default
-        echo 'src-git luci https://github.com/coolsnowwolf/luci' >> openwrt/feeds.conf.default
+        mkdir -p /workdir/openwrt/package/lean
 
-    - name: Update feeds
-      run: cd /workdir/lede && ./scripts/feeds update -a && cp -r package/lean /workdir/openwrt/package/ && cd /workdir/openwrt && ./scripts/feeds update -a
-        
-    - name: Install feeds
-      run: cd /workdir/openwrt && ./scripts/feeds install -a
+        # Add luci-app-ssr-plus
+        cd /workdir/openwrt/package/lean
+        git clone --depth=1 https://github.com/fw876/helloworld
+        cd /workdir/openwrt
+
+        cd /workdir/lede/package/lean
+        cp -rp shadowsocksr-libev /workdir/openwrt/package/lean/
+        cp -rp pdnsd-alt /workdir/openwrt/package/lean/
+        cp -rp microsocks /workdir/openwrt/package/lean/
+        cp -rp dns2socks /workdir/openwrt/package/lean/
+        cp -rp simple-obfs /workdir/openwrt/package/lean/
+        cp -rp v2ray-plugin /workdir/openwrt/package/lean/
+        cp -rp v2ray /workdir/openwrt/package/lean/
+        cp -rp xray /workdir/openwrt/package/lean/
+        cp -rp trojan /workdir/openwrt/package/lean/
+        cp -rp ipt2socks /workdir/openwrt/package/lean/
+        cp -rp redsocks2 /workdir/openwrt/package/lean/
+        cp -rp kcptun /workdir/openwrt/package/lean/
+
+        cd /workdir/openwrt
+        mv /workdir/openwrt/feeds/gli_pub/shadowsocks-libev /workdir/openwrt/feeds/gli_pub/shadowsocks-libev.bak
+        mv /workdir/openwrt/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/packages/net/shadowsocks-libev.bak
+        cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/gli_pub/shadowsocks-libev
+        cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/packages/net/shadowsocks-libev
+        cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/package/lean/helloworld/
+
+        # Clone community packages to package/community
+        mkdir package/community
+        cd /workdir/openwrt/package/community
+
+        # Add Lienol's Packages
+        git clone --depth=1 https://github.com/Lienol/openwrt-package
+
+        # Add luci-app-passwall
+        git clone --depth=1 https://github.com/xiaorouji/openwrt-passwall
+
+        # Add gotop
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/gotop
+
+        # Add smartdns
+        svn co https://github.com/pymumu/smartdns/trunk/package/openwrt ../smartdns
+        svn co https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/luci-app-smartdns ../luci-app-smartdns
+
+        # Add adbyby
+        cp -r /workdir/lede/package/lean/adbyby ./
+        cp -r /workdir/lede/package/lean/luci-app-adbyby-plus ./
 
     - name: Fix compile issue
       run: |
@@ -97,15 +139,6 @@ jobs:
         rm -rf /workdir/openwrt/feeds/packages/lang/golang
         cp -r /workdir/lede/feeds/packages/lang/golang /workdir/openwrt/feeds/packages/lang/golang
         
-    - name: Patch for HC5611 HiWiFiGo
-      run: |
-        cp $PATCH_PATH/01_leds /workdir/openwrt/target/linux/ramips/base-files/etc/board.d/01_leds
-        cp $PATCH_PATH/02_network /workdir/openwrt/target/linux/ramips/base-files/etc/board.d/02_network
-        cp $PATCH_PATH/ramips.sh /workdir/openwrt/target/linux/ramips/base-files/lib/ramips.sh
-        cp $PATCH_PATH/platform.sh /workdir/openwrt/target/linux/ramips/base-files/lib/upgrade/platform.sh
-        cp $PATCH_PATH/HC5611.dts /workdir/openwrt/target/linux/ramips/dts/HC5611.dts
-        cp $PATCH_PATH/mt76x8.mk /workdir/openwrt/target/linux/ramips/image/mt76x8.mk
-                
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
@@ -113,8 +146,6 @@ jobs:
         chmod +x $CUSTOM_CONFIG
         cd openwrt
         $GITHUB_WORKSPACE/$CUSTOM_CONFIG
-        echo 'Force to enable WIFI'
-        sed -i 's/set wireless.radio\${devidx}.disabled=1/set wireless.radio\${devidx}.disabled=0/g' /workdir/openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
         
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@main
