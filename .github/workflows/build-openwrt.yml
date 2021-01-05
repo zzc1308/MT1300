@@ -216,7 +216,7 @@ jobs:
         cp ../../../packages/mipsel_24kc/luci/luci-compat_*.ipk ./ssrp/
         cp ../../../packages/mipsel_24kc/luci/luci-lib-ipkg_*.ipk ./ssrp/
 
-        cat << EOF > ./ssrp/install.sh
+        cat << EOF > ./ssrp/install-ssrp.sh
         opkg update
         opkg install luci luci-i18n-base-zh-cn ttyd luci-app-ttyd wget
         opkg install ./luci-i18n-ttyd-zh-cn_*.ipk
