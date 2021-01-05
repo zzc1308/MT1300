@@ -36,7 +36,7 @@ env:
   CONFIG_FILE: .config
   CUSTOM_CONFIG: customize.sh
   #SSH_ACTIONS: false
-  UPLOAD_BIN_DIR: false
+  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
   TZ: Asia/Shanghai
