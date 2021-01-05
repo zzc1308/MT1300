@@ -185,6 +185,64 @@ jobs:
       with:
         name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: openwrt/bin
+    
+    - name: Organize plugin
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      run: |
+        cd openwrt/bin/targets/*/*
+        mkdir ssrp
+        cp ../../../packages/mipsel_24kc/luci/luci_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/luci/luci-i18n-base-zh-cn_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/packages/ttyd_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/luci/luci-app-ttyd_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/packages/wget_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/luci/luci-i18n-ttyd-zh-cn_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/packages/htop_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/shadowsocksr-libev-alt_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/pdnsd-alt_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/microsocks_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/dns2socks_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/shadowsocksr-libev-ssr-local_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/simple-obfs_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/tcping_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/v2ray-plugin_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/xray_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/trojan_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/ipt2socks_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/redsocks2_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/luci-app-ssr-plus_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/base/luci-i18n-ssr-plus-zh-cn_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/luci/luci-compat_*.ipk ./ssrp/
+        cp ../../../packages/mipsel_24kc/luci/luci-lib-ipkg_*.ipk ./ssrp/
+
+        cat << EOF > ./ssrp/install.sh
+        opkg update
+        opkg install luci luci-i18n-base-zh-cn ttyd luci-app-ttyd wget
+        opkg install ./luci-i18n-ttyd-zh-cn_*.ipk
+        opkg install ./htop_*.ipk
+        opkg install ./shadowsocksr-libev-alt_*.ipk
+        opkg install ./pdnsd-alt_*.ipk 
+        opkg install ./microsocks_*.ipk 
+        opkg install ./dns2socks_*.ipk 
+        opkg install ./shadowsocksr-libev-ssr-local_*.ipk 
+        opkg install ./simple-obfs_*.ipk
+        opkg install ./tcping_*.ipk 
+        opkg install ./v2ray-plugin_*.ipk 
+        opkg install ./xray_*.ipk 
+        opkg install ./trojan_*.ipk 
+        opkg install ./ipt2socks_*.ipk
+        opkg install ./redsocks2_*.ipk 
+        opkg install ./luci-app-ssr-plus_*.ipk
+        opkg install ./luci-i18n-ssr-plus-zh-cn_*.ipk
+        opkg install ./luci-compat_*.ipk --force-overwrite
+        opkg install ./luci-lib-ipkg_*.ipk
+        EOF
+
+        chmod +x ./ssrp/install-ssrp.sh
+
+        tar czvf mt1300-ssrp.tar.gz ./ssrp
+        rm -rf ./ssrp
 
     - name: Organize files
       env:
