@@ -14,3 +14,6 @@
 
 此编译的固件 OpenWrt_firmware_gl-mt1300_yyyymmddhhmm 中已经包含插件包 mt1300-酸酸乳片.tar.gz。
 ssh上传mt1300-酸酸乳片.tar.gz到GL官方固件下，然后执行install-酸酸乳片.sh即可。
+
+
+2020-01-21 新增从Lean编译的固件，使用 .config.lean 触发编译
