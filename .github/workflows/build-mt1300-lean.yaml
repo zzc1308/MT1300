@@ -102,11 +102,10 @@ jobs:
         svn co https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/luci-app-smartdns ../luci-app-smartdns
         
         # Fix mt76 wireless driver
-        cd  ~/openwrt/package/kernel/mt76
+        cd  /workdir/openwrt/package/kernel/mt76
         rm -f Makefile
         wget https://raw.githubusercontent.com/openwrt/openwrt/master/package/kernel/mt76/Makefile
         sed -i '/mt7662u_rom_patch.bin/a\\techo mt76-usb disable_usb_sg=1 > $\(1\)\/etc\/modules.d\/mt76-usb' Makefile
-        cd  ~/openwrt
     
     - name: Fix compile issue
       run: |
@@ -135,6 +134,7 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
+        
     - name: Compile the firmware
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
@@ -147,6 +147,7 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "::set-env name=DEVICE_NAME::_$(cat DEVICE_NAME)"
         echo "::set-env name=FILE_DATE::_$(date +"%Y%m%d%H%M")"
+        
     - name: Check space usage
       if: (!cancelled())
       run: df -hT
