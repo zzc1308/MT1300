@@ -100,6 +100,13 @@ jobs:
         # Add smartdns
         svn co https://github.com/pymumu/smartdns/trunk/package/openwrt ../smartdns
         svn co https://github.com/project-openwrt/openwrt/trunk/package/ntlf9t/luci-app-smartdns ../luci-app-smartdns
+        
+        # Fix mt76 wireless driver
+        cd  ~/openwrt/package/kernel/mt76
+        rm -f Makefile
+        wget https://raw.githubusercontent.com/openwrt/openwrt/master/package/kernel/mt76/Makefile
+        sed -i '/mt7662u_rom_patch.bin/a\\techo mt76-usb disable_usb_sg=1 > $\(1\)\/etc\/modules.d\/mt76-usb' Makefile
+        cd  ~/openwrt
     
     - name: Fix compile issue
       run: |
