@@ -63,25 +63,6 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
-  
-    - name: Test
-      working-directory: /workdir
-      run: |
-        sudo mkdir -p /workdir
-        sudo chown $USER:$GROUPS /workdir
-        
-        echo "Current dir:"
-        pwd
-        echo "Workspace: $GITHUB_WORKSPACE"
-        mkdir openwrt
-        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        echo "Files in workdir:"
-        ls -l /workdir
-        cd $GITHUB_WORKSPACE/openwrt
-        echo "Files in workspace:"
-        ls -l $GITHUB_WORKSPACE/openwrt/
-        exit 1
-        
 
     - name: Clone source code
       working-directory: /workdir
