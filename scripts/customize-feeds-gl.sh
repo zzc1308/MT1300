@@ -8,7 +8,7 @@ git clone --depth=1 https://github.com/fw876/helloworld
 cd /workdir/openwrt
 cd /workdir/lede/package/lean
 plist="shadowsocksr-libev pdnsd-alt microsocks dns2socks simple-obfs v2ray-plugin v2ray xray trojan ipt2socks redsocks2 kcptun"
-for dir in $plist;  
+for dir in $plist
 do
     if [ -d $dir ]
     then
@@ -25,7 +25,7 @@ if [ -d /workdir/lede/feeds/packages/net/shadowsocks-libev ]
 then
     [ -d /workdir/openwrt/feeds/packages/net/shadowsocks-libev ] && mv /workdir/openwrt/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/packages/net/shadowsocks-libev.bak
     [ -d /workdir/openwrt/feeds/gli_pub ] && cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/gli_pub/shadowsocks-libev
-    [ -d /workdir/openwrt/package/lean/helloworld ] &7 cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/package/lean/helloworld/
+    [ -d /workdir/openwrt/package/lean/helloworld ] && cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/package/lean/helloworld/
     cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/packages/net/shadowsocks-libev
 fi
 
