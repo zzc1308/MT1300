@@ -29,6 +29,10 @@ then
     cp -r /workdir/lede/feeds/packages/net/shadowsocks-libev /workdir/openwrt/feeds/packages/net/shadowsocks-libev
 fi
 
+rm -rf /workdir/openwrt/feeds/packages/net/wget
+cp -rp /workdir/lede/package/lean/wget /workdir/openwrt/feeds/packages/net/wget
+cp -rp /workdir/lede/package/lean/wget /workdir/openwrt/package/lean/wget
+
 # Clone community packages to package/community
 mkdir package/community
 cd /workdir/openwrt/package/community
