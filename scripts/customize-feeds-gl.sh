@@ -7,7 +7,7 @@ git clone --depth=1 https://github.com/fw876/helloworld
 
 cd /workdir/openwrt
 cd /workdir/lede/package/lean
-plist="shadowsocksr-libev pdnsd-alt microsocks dns2socks simple-obfs v2ray-plugin v2ray xray trojan ipt2socks redsocks2 kcptun"
+plist="shadowsocksr-libev pdnsd-alt microsocks dns2socks simple-obfs v2ray-plugin v2ray xray trojan ipt2socks redsocks2 kcptun luci-app-zerotier"
 for dir in $plist
 do
     if [ -d $dir ]
