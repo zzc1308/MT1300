@@ -51,6 +51,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
+    - name: Test
+      working-directory: /workdir
+      run: |
+        echo "Current dir: $(pwd)"
+        echo "Workspace: $GITHUB_WORKSPACE"
+        mkdir openwrt
+        ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        echo "Files in workdir:"
+        ls -l /workdir
+        cd $GITHUB_WORKSPACE/openwrt
+        echo "Files in workspace:"
+        ls -l $GITHUB_WORKSPACE/openwrt/
+        exit 1
+        
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
